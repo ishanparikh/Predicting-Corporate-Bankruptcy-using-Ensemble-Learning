@@ -1,0 +1,86 @@
+% \label{explain:XGB}
+% Chen and Guestrin \cite{chen2016xgboost} describe XGBboost as an ensemble of K Classification and Regression Trees (CART) \(\left\{T_{1}\left(x_{i}, y_{i}\right), \ldots . T_{K}\left(x_{i}, y_{i}\right)\right\}\) where \(x_{i}\) is the given training set of descriptors associated with a molecule to predict the class label, y, Given that a CART assigns a real score to each leaves (outcome or target), the prediction scores for individual CART is summed up to get the final score and evaluated through \(K\) additive functions, as shown in  \autoref{xgb1}:
+
+% \begin{equation}
+% \label{xgb1}
+% \hat{y}_{i}=\sum_{k=1}^{K} f_{k}\left(x_{i}\right), f_{k} \in F
+% \end{equation}
+
+% where \(f_{k}\) represents an independent tree structure with leaf scores and \(F\) is the space of all CART. The regularized objective to optimize is given by  \autoref{xgb2}:
+
+% \begin{equation}
+% \label{xgb2}
+% \operatorname{Obj}(\Theta)=\sum_{i}^{n} l\left(y_{i}, \hat{y}_{i}\right)+\sum_{k}^{K} \Omega\left(f_{k}\right)
+% \end{equation}
+
+% The first term is a differentiable loss function, \(l,\) which measures the difference between the predicted \(\hat{y}\) and the target \(y_{i}\). The second is a regularization term \(\Omega\) which penalizes the complexity of the model to avoid over-fiting. It is given by \(\Omega(f)= \alpha T+\frac{1}{2} \lambda \sum_{j-1}^{T} w_{j}^{2}\), where \(T\) and \(w\) are the number of leaves and the score on each leaf respectively.  $\alpha$ and $\lambda$ are constants to control the degree of regularization. Apart from the use of regularization, shrinkage and descriptor subsampling are two additional techniques used to prevent overiting \cite{sewell2008ensemble}.
+
+
+
+% Training XGBoost is summarized as follows:
+
+% \begin{enumerate}
+%     \item For each descriptor:
+%         \begin{enumerate}
+%                 \item Sort the numbers
+%                 \item Scan the best point to split, i.e, the lowest gain
+%         \end{enumerate}
+      
+%     \item Choose the descriptor with the best splitting point that optimizes the training objective
+%     \item Continue splitting (as in (Step 1) and (Step 2)) until the specified maximum tree depth is reached
+%     \item Assign prediction score to the leaves and prune all negative nodes (nodes with negative gains) in a bottom-up order
+%     \item Repeat the above steps in an additive manner until the specified number of rounds (trees K) is reached.
+% \end{enumerate}
+
+
+% Since additive training is used, the prediction $\hat{y}$ at step $t$ expressed as
+
+% \begin{equation}
+% \hat{y}_{i}^{(t)}=\sum_{k=1}^{K} f_{k}\left(x_{i}\right)=\hat{y}_{i}^{(t-1)}+f_{t}\left(x_{i}\right)
+% \end{equation}
+
+% And the objective function can be written as:
+
+% \begin{equation}
+% \operatorname{Obj}(\Theta)^{(t)}=\sum_{i}^{n} l\left(y_{i}, \hat{y}_{i}^{(t-1)}+f_{t}\left(x_{i}\right)\right)+\Omega\left(f_{t}\right)
+% \end{equation}
+
+% % After taking a Taylor expansion where \(g_{i}=\partial_{\hat{y}_{i}^{(t-1)}} l\left(y_{i}, \hat{y}_{i}^{(t-1)}\right)\) and \(h_{i}=\partial^{2}_{\hat{y}_{i}^{(t-1)}} l\left(y_{i}, \hat{y}_{i}^{(t-1)}\right)\) are respectively first and second order statistics on the loss function, a simplified objective function without constants at step \(t\) is as follows: 
+
+% % \begin{equation}
+% % \operatorname{Obj}(\Theta)^{(t)}=\sum_{i=1}^{n}\left[g_{i} f_{t}\left(x_{i}\right)+\frac{1}{2} h_{i} f_{t}^{2}\left(x_{i}\right)\right]+\Omega\left(f_{t}\right)
+% % \end{equation}
+
+
+
+% % The objective function can be written by expanding the regularization term as
+% % \begin{equation}
+% % \begin{aligned}
+% % \operatorname{Obj}(\Theta)^{(t)} &=\sum_{i=1}^{n}\left[g_{i} f_{t}\left(x_{i}\right)+\frac{1}{2} h_{i} f_{t}^{2}\left(x_{i}\right)\right]+\gamma T+\frac{1}{2} \lambda \sum_{j=1}^{T} w_{j}^{2} \\
+% % &=\sum_{j=1}^{T}\left[\left(\sum_{i \in I_{j}} g_{i}\right) w_{j}+\frac{1}{2}\left(\sum_{i \in I_{j}} h_{i}+\lambda\right) w_{j}^{2}\right]+v T
+% % \end{aligned}
+% % \end{equation}
+
+% % where \(I_{j}=\left\{i | q\left(x_{i}\right)=j\right\}\) is the instance set of leaf \(j\), for a given structure \(q(x)\) the optimal leaf weight, \(w_{j}^{*},\) and the optimal objective function which measure how good the structure is are given by \autoref{xgb7}.
+
+% % \begin{equation}
+% % \label{xgb7}
+% % \begin{array}{c}
+% % w_{j}^{*} = -\frac{G_{j}}{H_{j}+\lambda} \\
+% % O b j^{*} = -\frac{1}{2} \sum_{j=1}^{T} \frac{G_{j}^{2}}{H_{j}+\lambda}+\mathrm{yT}
+% % \end{array}
+% % \end{equation}
+
+% % % where $\(G_{j}=\sum_{i \in I_{j}} g_{i}$ and $\(H_{j}=\sum_{i \in I_{j}} h_{i}\) \\ \\
+% % $$
+% % \begin{array}
+% % \text \hbox{ where } G_{j}=\sum_{i \in I_{j}} g_{i} G_{j}=\sum_{i \in I_{j}} g_{i} \text { and } H_{j}=\sum_{i \in I_{j}} h_{i}
+% % \end{array}
+% % $$
+
+% % \autoref{xgb10} is used to score a leaf node during spliting. The first, second and third term of the equation stands for the score on the left, right and the original leaf respectively. Moreover, the final term, \(\mathrm{y}\), is regularization on the additional leaf.
+
+% % \begin{equation}
+% % \label{xgb10}
+% % \text {Gain}=\frac{1}{2}\left[\frac{G_{L}^{2}}{H_{L}+\lambda}+\frac{G_{R}^{2}}{H_{R}+\lambda}-\frac{\left(G_{L}+G_{R}\right)^{2}}{H_{L}+H_{R}+\lambda}\right]-\mathrm{y}
+% % \end{equation}

@@ -1,0 +1,8 @@
+\label{conceptDrift}
+
+Data is subject to concept drift when our interpretation of the data changes with time even while the general distribution of the data does not. This change led to complications in machine learning tasks. Schlimmer and Granger \cite{schlimmer1986incremental} defined concept drift as the process changes of hidden environment that led to changes of target concept. Widmer and Kubat \cite{widmer1996learning} called real concept drift as the process in which recessive changes in the environment led to changes of target concept, and called virtual concept drift as the process in which environmental changes led to changes of distribution of dataset. These two types of concept drifts may occur simultaneously, and virtual concept drift may occur in isolation. No matter the concept drift was real or virtual, they would make the model based on old data inconsistent with new data. Thus, it is necessary to account for concept drift when designing machine learning models on historic data.
+
+% Sun \cite{sun2010dynamic} studied the mechanism of rolling time windows with fixed and variable widths, and their results showed that there was a certain degree of concept drift in financial distress prediction of Chinese listed companies. That is, under the unchanging standard definition of financial distress, incremental data would gradually take on new features of corporate financial distress in new economic environment with time past. 
+
+%Need to add something more - feels left undone.
+

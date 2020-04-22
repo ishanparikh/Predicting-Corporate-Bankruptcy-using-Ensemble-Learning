@@ -1,0 +1,42 @@
+\label{chap:Discussion}
+\section{Success of MICE Imputation}
+The results obtained ascertain that all machine learning and ensemble models perform optimally under MICE imputation. 
+MICE imputation is designed with the focus of handling missing data in large, public-use datasets. Under the missing-at-random (MAR) assumption \cite{little2019statistical}, MICE enables more efficient and less biased estimation of model parameters. The imputation also works well on our data as the missing completely at random (MCAR) and missing not at random (MNAR) assumptions are not plausible as there is no randomness involved in the missing entries of this financial data i.e., the blank entries in the data are because the corporations did not record those indicators.
+The success of MICE imputation can additionally be attributed to the algorithm having a separate imputation model for each variable that needs to be estimated. MICE can also handle different variable types as well as complexities such as varying bounds \cite{wulff2017multiple}. The best performing model - XGBoost is unusable without MICE as its F1-Score is only 0.046 meaning that the model has very poor generalisability and a low discriminant power (to distinguish between the two classes). \textbf{After using MICE to estimate missing data, the F1-Score achieved by XGBoost is the highest amongst all experiments and the 20\% improvement in AUC score is also noteworthy.}
+
+\section{Success of Oversampling the Minority Class}
+The oversampling technique has been used to overcome the data imbalance problem seen in our financial dataset. As the number of non-bankrupt instances exceeds that of the bankrupt instances, the non-bankrupt class is likely to invade the territory of the bankrupt class so that the class boundary is vulnerable to distortions. 
+Therefore, this study uses oversampling as a method to generate more instances of the bankrupt class. This increases generalisability in our models and significantly improves performance. \autoref{table:yesImputenoSMOTE} reports XGBoost with an AUC and F1-score of 0.759 and 0.671 respectively. \textbf{After incorporating oversampling, these values are boosted to 0.856 and 0.798 respectively (as seen in \autoref{table:results}) leading to the best performing model in our study.}
+
+\section{Success of Extreme Gradient Boosting (XGBoost)}
+The results are shown in \autoref{table:results} show that XGBoost proves to be the best ensemble classifier when applied to the bankruptcy prediction problem on the Japanese financial data. These results are in line with the success seen in past studies like \cite{barboza2017machine,le2018cluster} that compare various machine learning models and conclusively report XGBoost as the most successful model on bankruptcy and credit default predictions.
+% In the work produced by \cite{barboza2017machine}, XGBoost was able to beat deep CNNs in a similar bankruptcy prediction task.
+
+% We can attribute the success of XGBoost to its gradient boosting ability which introduces regularisation to combat overfitting - The paper \cite{wang2019xgboost} reviews this property to be 'one of the most crucial aspects to the success of XGBoost'.
+
+The success of XGBoost can be attributed to its many advantages that include: being robust to outliers present in the input data, its ability to capture non-linear relationships in data and most importantly the use of L1 and L2 regularisation that the algorithm introduces to combat overfitting and improve generalisation. The paper \cite{wang2019xgboost} reviews this property to be ``one of the most crucial aspects to the success of XGBoost". XGBoost also implements the `Netwon-Rhapson Method' to optimise its loss. Instead of solely computing the gradient and following it, XGBoost uses the second-order derivative to firstly gather more information and secondly to make a better approximation of the direction of the maximum decrease and the step size required. Using this higher-order approximation (calculated by the Hessian matrix), XGBoost can achieve a better tree structure.
+
+\section{Most Influential Financial Ratios}
+Finally, to understand the most useful and impactful ratios for predicting bankruptcy, we analyse the popularity of features present in the forests of XGBoost. We note that X25 - the adjusted share of equity in the financing of assets, X40 - the current ratio and X52 - the liabilities turnover ratio appear in each research year (as shown in \autoref{table:featureRank}). These financial ratios are therefore presented as the most influential financial ratios, for the Japanese financial data. 
+\section{Limitations}
+Although the methods used in this study to predict bankruptcies are manifold, there are still a few limitations that are worthy of being discussed.
+
+First and foremost, the credibility of our prediction is based solely on the authenticity and integrity of the data provided to WRDS. 
+Manipulating financial statements is relatively easy to do \cite{agyenim2017role}  as the GAAP standards afford a significant amount of flexibility, making it feasible for corporate management to falsely report the financial condition of the company. Also, the compensation of corporate executives is directly tied to the financial performance of the company. As a result, they have a direct incentive to report positive performance every year. Since we do not have the resources to validate the authenticity of the data ourselves, we assume that the data provided is indeed accurate.
+
+Second, the use of `feature selection' as a further pre-processing method could not be effectively incorporated in this study. Feature selection is employed to select and extract more valuable information from the vast amounts of data. That is, it aims at filtering out redundant or irrelevant information, and consequently can improve the model’s performance as well as reduce the effort of training the model. 
+
+In this paper, we attempted to use PCA, Chi-Square, and Recursive Feature Elimination to improve the model's performance, but due to the unforeseen circumstances (the COVID-19 pandemic and the nation-wide lockdown) that lead to the closure of Appleton Tower and the restricted access to Edinburgh University servers, we were unable to conduct detailed and conclusive experiments within the set time-frame.
+
+Third, using oversampling methods such as SMOTE can make the problem harder by duplicating the existing outliers and noisy examples. Further noise is added when minority samples around the boundary (between bankrupt and non-bankrupt) are duplicated in their neighbourhood. This study suffers this limitation as we have not accounted for outliers that are synthetically generated.
+
+Fourth, there are three main strategies used for finding the proper setting of hyperparameters in tree-based algorithms: grid search (GS), random search (RS), and Bayesian Tree-structured Parzen estimators (TPE). They have demonstrated a substantial influence on classification performance.
+As our research has had a time-bound constraint, we have not been able to explore these strategies to their fullest extent. Exploring these strategies could potentially lead to discovering models that have better performance.
+
+Finally, our current study is limited by only using financial ratios as feature vectors. We acknowledge that recent studies (\cite{dyer2017evolution,hosaka2019bankruptcy,tinoco2013financial}) have incorporated various combinations of accounting data, stock market information, corporate governance indicators and sentiment analysis of articles published on social media platforms and other textual disclosure data. 
+I believe that incorporating more data would give us an additional edge to predict bankruptcies within a shorter horizon as a company's health would be represented comprehensively.
+
+
+
+
+

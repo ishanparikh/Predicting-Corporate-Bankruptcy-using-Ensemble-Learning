@@ -1,0 +1,191 @@
+
+% to choose your degree
+% please un-comment just one of the following
+\documentclass[bsc,frontabs,twoside,singlespacing,parskip,deptreport]{infthesis}     % for BSc, BEng etc.
+% \documentclass[minf,frontabs,twoside,singlespacing,parskip,deptreport]{infthesis}  % for MInf
+
+\usepackage{amsmath}
+
+% \usepackage[bitstream-charter]{mathdesign}
+\usepackage{fixltx2e}
+\usepackage[english]{babel}
+\usepackage{microtype} % removes extra spacing between text
+\usepackage{ragged2e}
+%\usepackage{lscape} % to write pages in landscape environment
+\usepackage{array, threeparttable} % to add footnotes to the tables
+% \usepackage{caption} % to create some space between table caption and table, otherwise there was no space
+% \captionsetup[table]{skip=5pt}
+% \usepackage[singlelinecheck=false]{caption}
+
+\usepackage{graphicx}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{eushield}
+\shieldtype{3}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{lipsum}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{mathtools,amssymb}
+\usepackage{enumitem}
+\usepackage{todonotes}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{gensymb}
+\usepackage{longtable}
+\usepackage[titletoc]{appendix}
+\usepackage{blindtext}
+\usepackage{lscape}
+\usepackage{csvsimple}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{algorithm,algpseudocode}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\usepackage{hyperref,xcolor}% http://ctan.org/pkg/{hyperref,xcolor}
+\usepackage{makeidx}
+\definecolor{winered}{rgb}{0.5,0,0}
+\usepackage{xcolor}
+
+
+\hypersetup{
+  colorlinks   = true, %Colours links instead of ugly boxes
+  urlcolor     = black, %Colour for external hyperlinks
+  linkcolor    = blue, %Colour of internal links
+  citecolor   = winered %Colour of citations
+}
+
+\usepackage{graphicx}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{eushield}
+\shieldtype{3}
+\begin{document}
+% \begin{textblock*}{<hsize>}(<hpos>,<vpos>)
+\begin{textblock*}{100pt}(16cm,2cm)
+\includegraphics[width=80pt]{\eushield}
+\end{textblock*}
+
+\title{Predicting Corporate Bankruptcy using Ensemble Learning}
+
+\author{Ishan Rohan Parikh}
+
+% to choose your course
+% please un-comment just one of the following
+\course{Artificial Intelligence and Computer Science}
+
+% to choose your report type
+% please un-comment just one of the following
+\project{Undergraduate Dissertation} % CS&E, E&SE, AI&L
+%\project{Undergraduate Thesis} % AI%Psy
+\project{4th Year Project Report}
+
+\date{\today}
+
+\abstract{
+Bankruptcy prediction has been a subject of interest for almost a century and leading to intensive research from academics and practitioners. The aim of predicting financial distress is to develop a predictive model that combines various econometric measures and allows us to foresee the financial condition of a firm. Seminal academic research has evaluated bankruptcy prediction using traditional statistics techniques (e.g. Logistic Regression) and early artificial intelligence models (e.g. Artificial Neural Networks).
+
+In this study, we use ensemble machine learning models to predict bankruptcy on a one-year horizon. 
+We use Wharton Research Data Services to provide financial data from 4000 listed Japanese corporations.
+Using financial data from 2000 to 2018, our study uses 64 financial ratios chosen from the seminal research, as documented in \cite{Altman,beaver2005have,hardle2009variable,tian2017financial,tian2015variable, ding2012class}.
+This research leads to a substantial improvement in prediction performance using different imputation techniques to estimate missing data and the creation of synthetic minority class data using the Synthetic Minority Over-sampling Technique (SMOTE). We compare the performance of machine learning and ensemble learning techniques, specifically Decision Trees, Random Forests, Bagging, and Extreme Gradient Boosting (XGBoost). 
+
+We find that using Multiple Imputation by Chained Equations as an imputation technique and XGBoost as an ensemble model, outperforms the other models by achieving the highest AUC and F1 score of 0.856 and 0.798 respectively. 
+Our research adds to the discussion and the ongoing debates about the superiority of computational methods over statistical techniques, as seen in Tsai, Hsu, and Yen's \cite{tsai2014comparative} and Yeh, Chi, and Lin's papers \cite{yeh2014going}. We also put forward a novel contribution towards Japanese bankruptcy prediction by using a ten-year rolling window model on our data and then pipelining it into an ensemble prediction framework.
+}
+
+\maketitle
+
+\section*{Acknowledgements}
+I would like to take this opportunity to thank my supervisor, Dr. Tiejun Ma, for providing me with the necessary financial data for this project and for guiding me through the course of this dissertation. Dr. Ma encouraged me to do a very thorough study of the existing research, which helped me in exploring newer ideas. 
+
+I also want to acknowledge the contribution of Mr. Luo Chang, for his limitless patience and mentorship during my project. His advice on how to do effective research saved me countless hours, which was then invested in documenting this project.
+
+My dissertation submission is amidst a worldwide COVID-19 pandemic being suffered by millions across the world. At the time of a nationwide lockdown, away from University, I am eternally grateful to my friend Liam and his parents Mair and Peter for extending their home and heart to me.
+
+Finally, to my family, for giving me this opportunity to study at the University of Edinburgh and for their constant support and encouragement to pursue all the opportunities in front of me and always inspiring me to do my best by going beyond the defined lines to raise the bar.
+
+\tableofcontents
+
+%\pagenumbering{arabic}
+
+
+\chapter{Introduction}
+\input{chapters/intro}
+
+
+%% --------------------------       NEW CHAPTER BEGINS HERE         ------------------------------
+\chapter{Background and Literature Review}
+\input{chapters/Background}
+
+%% --------------------------       NEW CHAPTER BEGINS HERE         ------------------------------
+\chapter{Our Japanese Dataset}
+\input{chapters/japanData}
+
+
+%% ----------------------------     NEw CHAPTER BEGINS HERE ------------------------------
+\chapter{Experiment Methodologies and Design}
+\input{chapters/Methodologies}
+
+
+
+%% --------------------------       NEW CHAPTER BEGINS HERE         ------------------------------
+\chapter{Empirical Results}
+\label{chap:results}
+\input{chapters/results}
+
+
+%% --------------------------       NEW CHAPTER BEGINS HERE         ------------------------------
+\chapter{Discussion}
+\input{chapters/discussion}
+
+
+
+%% --------------------------       NEW CHAPTER BEGINS HERE         ------------------------------
+\chapter{Conclusion}
+\input{chapters/conclusion}
+% \label{chap:Conclusion}
+
+
+%% --------------------------       NEW CHAPTER BEGINS HERE         ------------------------------
+
+\begin{appendices}
+
+\chapter{Concept Drift}
+\input{chapters/appendix_ConceptDrift}
+
+\chapter{Data Ranges}
+\input{chapters/appendix_dataRange}
+
+\chapter{Feature Distributions}
+\input{chapters/appendix_featDist}
+
+% \chapter{Logistic Regression Explained}
+% \input{chapters/appendix_LR}
+
+% \chapter{Decision Trees Explained}
+% \input{chapters/appendix_DT}
+
+% \chapter{Random Forests Explained}
+% \input{chapters/appendix_RF}
+
+% \chapter{XGBoost Explained}
+% \input{chapters/appendix_XGB}
+
+
+\chapter{Python Libraries used for Project}
+\input{chapters/appendix_Lib}
+
+\end{appendices}
+
+
+\bibliographystyle{plain}
+\bibliography{mybibfile}
+
+\end{document}

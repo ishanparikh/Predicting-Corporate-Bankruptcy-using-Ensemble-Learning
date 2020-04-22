@@ -1,0 +1,529 @@
+\label{chap:Methodologies}
+
+\section{Data Partitioning - Cross Validation}
+
+In machine learning, model validation is referred to as the process where a trained model is evaluated with an unseen testing data set \cite{ Wang2013}. The main concept behind the validation process is to partition the dataset into a training set, which is used to train the model, and testing set, which is used to test and evaluate the model. In validation, the training set is utilised only one time, i.e., to train the model.
+
+The problem with splitting the dataset into two partitions is that the model will only perform based on the data that was used to train it. This could lead to overfitting or underfitting hence weakening the model's ability to perform in a more generalised way ( i.e., evaluate unforeseen data outside these two partitions). Validation also tends to induce some testing bias as we reserved a piece of the dataset just for testing. To mitigate such problems and fully utilise our dataset, we use cross-validation to re-enforce the predictive ability of our model. There are various techniques which try to ensure low bias and low variances such as K-Fold Cross Validation, Stratified K-Fold Cross-Validation and Leave-P-Out Cross-Validation. 
+
+Stratified K-Fold cross-validation has been implemented in our experiments using the python library \textit{sklearn.model\_selection.StratifiedKFold}. It is common to use this method for cross-validation as the folds are made by preserving the percentage of samples for each class.  The paper \cite{sinkey1975multivariate} discusses the benefits of using Stratified K-Fold cross-validation where there is a high disparity in the number of instances of the majority and minority class.
+% Justify why this is good to do
+% Stratification seeks to ensure that each fold is representative of all structure of the data. 
+We ensured that each class is (approximately) equally represented across each test fold. These classes are combined in a complementary way to form training folds.
+
+The intuition behind this relates to the bias of most classification algorithms. They tend to weight each instance equally which means over-represented classes get too much weight (e.g. optimising F1-measure, Accuracy or a complementary form of error). 
+One specific issue that is important across even unbiased or balanced algorithms, is that they cannot learn or test a class that isn't represented at all in a fold {\cite{sinkey1975multivariate}}.
+
+To carry out Stratified K-Fold cross-validation, the dataset is split into $k$ partitions, of which $k-1$ partitions are used as a training set and the one remaining partition is used as a testing set. Here we ensure that each partition has the same percentage of minority class samples as seen in that year's data. 
+The process is iterated $k$ number of times so that at the end of the iterations every partition will be used once as a testing set. 
+At each iteration/fold performance metrics (like AUC, F1-score, precision, recall, etc) are measured. By the end of the $k$ iterations, these metrics are averaged. This reduces both bias and variance as the original dataset is used for both training and testing sets. Therefore the model is neither overfitted by one large training set nor is it being under fitted by having a larger test set than the traditional validation method. 
+
+This technique is applied to the different machine learning models to help in the selection of the best performing model - by using the same folds for each model at each iteration. This technique enables the facility to tune hyperparameters by using this cross-validation technique with the same model but different hyperparameters and selecting the best at the end of the iteration (using some performance metrics). We have used 10-Fold cross-validation throughout this project, similar to the approach taken in \cite{liang2016financial}.
+
+
+% ----------------------        Logistic Regression     -----------
+
+
+\section{Baseline with Logistic Regression}
+\label{lrExplain}
+The foremost method of bankruptcy prediction, proposed by Altman \cite{Altman} used logistic regression (LR). Logistic regression \cite{agresti2005bayesian} is a binary classification method which assigns one class as `1' and the second as `0' and discriminates them using a linear decision boundary. It is easy to implement and can be used as an effective baseline for binary classification problems. Being quick and effective on high-dimensional data, we use LR as a baseline classifier in this study. This model was implemented by using the python library \textit{sklearn.linear\_model.LogisticRegression}.
+
+Logistic regression makes data assumptions such as independence and constant variance between the output and all values of the inputs. This simplicity and interpretability can occasionally lead to LR outperforming other sophisticated nonlinear models such as support vector machines \cite{kirasich2018random}, making it an effective baseline model.
+
+In this project, LR will be utilised to classify a binary outcome (bankrupt or non-bankrupt). In this model the sigmoid function (\autoref{eqn:sigomid}) is used as a Hypothesis Function (\autoref{eqn:hypot}) to map an instance/s denoted as $x$, with some given weights denoted as $\theta$, to its Estimated Probability (\autoref{eqn:estProb}) of the discrete outcome. 
+Here, $x$ represents a feature vector for observation in our data.
+% Therefore, this function will output 0 ≤ hθ(x) ≤ 1 as it is shown in Figure 2.2.
+
+\begin{equation}
+\label{eqn:sigomid}
+g(z)=\frac{1}{1+\exp ^{-z}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:hypot}
+\begin{aligned}
+&h_{\theta}=g\left(\theta^{T} x\right)\\
+&h_{\theta}=\frac{1}{1+e^{-g\left(\theta^{T} x\right)}}
+\end{aligned}
+\end{equation}
+
+The Hypothesis Function will classify an instance/s to its predicted outcome. Since the function will output the estimated probability of the discrete outcome, the model needs to interpret this output to be able to classify into `0' or `1'. To be able to compute this, a decision boundary is needed to predict $\hat{y} = 0$ or $\hat{y} = 1$, this can be seen in \autoref{eqn:yHat}. 
+%  Although in most cases the threshold is set to 0.5 as explained in Condition \autoref{eqn:yHat}, in other cases this may have to be adjusted to get better results depending on the problem being tackled (threshold must always be a value between 0 and 1). The decision boundary is a property of the hypothesis, so you can have non-linear decision boundaries by adding higher polynomial terms to the features.
+
+\begin{equation}
+\label{eqn:estProb}
+\begin{array}{l}
+P=(\hat{y}=0 | x ; \theta)+P=(\hat{y}=1 | x ; \theta)=1 \\
+P=(\hat{y}=0 | x ; \theta)=1-P=(\hat{y}=1 | x ; \theta)
+\end{array}
+\end{equation}
+
+\begin{equation}
+\label{eqn:yHat}
+\hat{y}=\left\{\begin{array}{ll}
+1 & \sigma\left(\theta^{T} x\right) \geq 0.5 ; \theta^{T} x \geq 0 \\
+0 & \sigma\left(\theta^{T} x\right)<0.5 ; \theta^{T} x<0
+\end{array}\right.
+\end{equation}
+
+
+Now that the hypothesis is defined, and the classification function is explained the model must be trained to adjust its weights $\theta$ to minimise the cost. The cost function $J(\theta)$ utilised in Logistic Regression is shown in \autoref{eqnLR:loss} and this cost function is used over the squared cost function to be able to find the global minimum when applying gradient descent. A desirable property of $J(\theta)$ is that it greatly penalises wrong predictions which have high probability with a high cost.
+
+
+\begin{equation}
+\label{eqnLR:loss}
+J(\theta)=-\frac{1}{m} \sum_{i=1}^{m} y_{i} \log h_{\theta}\left(x_{i}\right)+\left(1-y_{i}\right) \log \left(1-h_{\theta}\left(x_{i}\right)\right)
+\end{equation}
+
+The objective is to find a set of weights such that the negative log-likelihood is minimised over the defined training set using optimisation techniques like gradient descent. The loss function (\autoref{eqnLR:loss}) measures the difference between the ground truth label and the predicted class label. If the prediction is very close to the ground truth label, the loss value is low. Alternatively, if the prediction is far from the true label, the resulting log loss will be higher.
+
+
+% ---------------------- Decision Trees     -----------
+
+\section{Decision Trees}
+\label{method:DT}
+A decision tree \cite{quinlan1986induction} is a learning model based on a binary tree structure. Each internal node in the tree represents a yes/no question based on a single model covariate, with the data split based on the answer. The predicted outcome of each leaf node based on the majority class of the associated samples. Decisions trees are typically learnt by considering multiple candidate covariates and split points at each internal node and selecting the one that provides the biggest increase in the homogeneity of classes in the resulting subsets.
+% Decision Trees \cite{qquinlan1986induction} is a classification method that uses characteristics of the features in the dataset to build a tree of decision rules, where leaves are the different firm observations.
+% Once a tree has been built from training data, an unseen data point is classified by moving down the tree, at each level choosing to descend the branch corresponding to the characteristic relevant to the data point. Eventually, a leaf node is reached, which determines the predicted class of that data point.
+
+% The labelling process is a chain of simple decisions based on the results of sequential tests rather than a single, complex decision. Labelling involves sets of decision sequences form the branches of the decision tree, with tests being applied at the nodes. 
+% Labels are assigned to terminal (leaf) nodes by means of an allocation strategy, we use majority voting. 
+% Trees can be used for classification and regression \cite{quinlan1987simplifying, quinlan1986induction}.
+
+Various algorithms can grow a tree, they differ in the possible structure of the tree (e.g.the  number of splits per node), the criteria how to find the splits, when to stop splitting and how to estimate the simple models within the leaf nodes. In this study, we have used the classification and regression trees (CART) algorithm for tree induction.
+
+CART is a binary tree which is built by taking a set of instances from the training set and passing them to the root node, then a decision is made by using simple `if-statements', based on the features. This is done to partition the instances into two subsets and pass them as an input to child nodes. This procedure is then applied to each node until it reaches a subset with the purest (no mixed classes) distributions of the classes, known as the leaf node. 
+The most important aspect of this procedure is to know which decision should be taken at each node, in order to decrease the uncertainty (minimising the mixing of classes) of the subset. Firstly, a metric to quantify the uncertainty/purity at each node is needed and in this implementation Gini Impurity \cite{breiman2017classification} is used as shown in \autoref{eqn:gini}. The formula takes the node’s class of each instance in the subset, for that node $t$, and computes the probability of obtaining two different outputs from all the possible classes $k$. If the subset only contains instances with the same label, the subset is pure, meaning $I(t) = 0$. 
+% There are other methods which can be used to quantify the impurity at each node such as Entropy, MSE and MAE, but it depends on the problem being tackled (classification or regression).
+
+\begin{equation}
+\label{eqn:gini}
+Gini\mbox{-}Index(t)=1-\sum_{j=1}^{k} p^{2}(j | t)
+\end{equation}
+
+A smaller Gini index value of node n represents purity, which implies that the node contains more observations from a single class. Hence, a decreasing Gini index is an important criterion for node splitting.
+
+Additionally, another metric is needed to quantify how much a certain decision reduces uncertainty, and for this Information Gain is used. A decision is simply a condition based on a specific feature and it is usually a $\geq$ check when it's a numeric value. \autoref{eqn:IG} shows how Information Gain is computed by taking the $I(t)$ of the current node and subtracting it by the total number of samples in the right node over the total number of samples in the parent node $\frac{N_{1}^{2}}{N_{1}}$ multiplied by the right node uncertainty $I\left(t_{R}\right)$ and subtracting again with weighted average of left node uncertainty $\frac{N_{t} L}{N_{t}} I\left(t_{L}\right)$ based on a specific decision.
+
+
+\begin{equation}
+\label{eqn:IG}
+I_{g}(t)=I(t)-\frac{N_{t R}}{N_{t}} I\left(t_{R}\right)-\frac{N_{t L}}{N_{t}} I\left(t_{L}\right)
+\end{equation}
+
+
+So, at each node, every feature of each instance is checked using the Information Gain to find the best split. Once this is found the node is split into two child nodes taking as input the subset which met the criteria and the subset which did not meet the criteria. This is done recursively until there is no more further splits and the leaf nodes are reached. Once the tree is built, the tree can predict the class of unseen instances by passing the test dataset to the tree. These test instances follow down the tree taking the left or right nodes based on the criteria of the decision. Once a leaf node is reached the tree will predict the probability of that instance belonging to a specific class. 
+% A maximum depth for the Tree can be set or otherwise the Tree will keep on finding the best splits until all leaves are pure (if possible).
+
+
+% The relationship between the class label $\hat{y}$ and features x is shown below.
+
+% \begin{equation}
+%     \hat{y} = \hat{f}(x) = \sum_{m=1}^{M}c_m I , x \in R_m
+% \end{equation}
+
+% Each instance falls into exactly one leaf node. $ I_{x \in R_m}$ is the identity function that returns 1 if $ x$ is in the subset $R_m$ and 0 otherwise. If an instance falls into a leaf node $R_l$, the predicted outcome is $\^y = c_l$  where $c_l$ is the average of all training instances in leaf node $R_l$
+
+
+% This model was implemented using the python library \textbf{scikit-learn}.
+
+
+%  Reasons for failing
+
+Decision Trees are better at handling situations where the relationship between features and outcome is nonlinear or where features interact with each other (logistic regression models fail in this regard). The performance of Decision Trees although higher than LR is relatively lower compared to other ensemble techniques (as shown in \autoref{chap:results}). 
+This is mainly due to two reasons \cite{dietterich2000experimental}:
+
+\begin{enumerate}
+    \item Noise present in the data.
+    \item Redundant attributes of data.
+\end{enumerate}
+
+This model was implemented using the python library \textit{sklearn.tree.DecisionTreeClassifier}, with the following hyper-parameters:
+
+\begin{enumerate}
+    \item The strategy used to choose the split at each node: Best
+    \item The function to measure the quality of a split: Gini
+    \item The number of features to consider when looking for the best split: Number of Features
+
+\end{enumerate}
+
+
+% ----------------------        Random Forests     -----------
+
+\section{Random Forests}
+% Random forests are a popular method for classification tasks with high dimensional data. 
+
+Random forests are ensembles of Decision Trees, the technique utilises multiple Decision Trees (weak learners) known as estimators to average out the predictions made by each tree, and this is done to reduce overfitting and to reduce the low bias, high variance trade-off found in a Decision Trees. Therefore Random forests are applied in various areas, including computer vision \cite{bosch2007image} and credit-scoring \cite{brown2012experimental},  
+
+% because they are simple and flexible, and provide strong classification while avoiding over-fitting and improving accuracy. 
+
+While random forests are not at the leading edge for classification tasks such as the deep learning variants technique \cite{krizhevsky2012imagenet, tanaka2017forecasting}, we choose random forests as they have several desirable features \cite{kuhn2013applied}, such as:
+
+\begin{enumerate}
+    \item Random forests provide higher discriminatory ability because they assemble the decisions of a large number of trees, instead of a single tree. 
+    \item They are more generalisable and are robust to over‐fitting; hence, they may have better out‐of‐sample accuracy and be more robust to noise. 
+    \item They are better at handling large datasets because they enable researchers to efficiently train multiple trees in parallel and do not require complex hyper‐parameter settings. The researchers have to choose the number of decision trees to build a model.
+    
+    \item They provide a measure of each variable's relative contribution to the prediction, which helps researchers identify and assess the influence of each variable while distinguishing between active and inactive companies. This can help us predict bankruptcy.
+\end{enumerate}
+
+Random Forests are very simple to use and provide high performing models without loss of interpretability, which makes them suitable for real‐world data \cite{kuhn2013applied}. 
+% They are more suitable for real‐world data than are high classification performance machine learning methods like deep learning.
+
+
+% An explanation of how random forests works is detailed in Appendix \autoref{explainRF}.
+
+Predictions from random forests are made using the following process:
+
+\begin{enumerate}
+  \item Draw a subset of training data with random sampling by replacement (bootstrap).
+  
+  \item Train a decision tree with the subset of training data. At each node of the tree, choose the best split of a variable from only the randomly selected $m$ variables rather than from all the variables.
+  
+  \item Repeat steps 1 and 2 to produce $d$ decision trees.
+  \item Make predictions for new data by voting for the most popular class from among all of the output of the d decision trees.
+\end{enumerate}
+
+% The Gini index (\autoref{GI}) being a popular algorithm for constructing decision trees \cite{breiman2017classification}, is also used in the base learners of random forests. 
+% The algorithm selects the optimal splitting variable and the corresponding threshold value by making each node as pure as possible. Suppose $ M_n $ is the number of pieces of information reaching node n, and $ M_n^i$ is the number of data points belonging to class $ C_i$. The Gini index, $ GI_n $, of node $ n$ is thus
+
+% \begin{equation}
+% \label{GI}
+%     GI_n = 1 - \sum_{i=1}^{K} (p_n^i)^2,  \hbox{where }  p_n^i = M_n^i / M_n
+% \end{equation}
+
+% A smaller Gini index value of node n represents purity, which implies that the node contains more observations from a single class. Hence, a decreasing Gini index is an important criterion for node splitting.
+
+This model was implemented using the python library \textit{sklearn.ensemble.RandomForestClassifier}, with the following hyper-parameters mentioned below:
+
+\begin{enumerate}
+    \item The number of trees in the forest = 100
+    \item The function to measure the quality of a split: Gini
+    \item The number of features to consider when looking for the best split: $\sqrt{Number\mbox{ }of\mbox{ }Features}$
+
+\end{enumerate}
+
+% ----------------------        Balanced Bagging Classifier     -----------
+
+\section{Bagging}
+Breiman’s bagging \cite{breiman1996bagging}, also known as bootstrap aggregating, is one of the earliest ensemble learning algorithms. It is a technique involving independent classifiers that uses portions of the data and then combines them through model averaging, providing efficient results concerning a collection. It is designed to improve the stability and accuracy of classification \cite{quinlan1987simplifying} while simultaneously reducing variance to avoid overfitting.
+
+Diversity in bagging is obtained by using bootstrapped replicas of the training dataset, i.e., different training data subsets are randomly drawn—with replacement—from the entire training dataset. Each training data subset is used to train a different base learner of the same type. The base learners’ combination strategy for bagging is a majority vote. This simple strategy can reduce variance (hence prevent overfitting) when combined with the base learner generation strategies \cite{figini2016corporate}. 
+
+
+We have implemented the bagging algorithm as follows:
+
+\begin{enumerate}
+    \item A random bootstrap set, $t$, is selected from the parent dataset.
+    \item Classifiers $C_{t}$ are configured on the dataset from step $1 .$
+    \item Steps 1 and 2 are repeated for $t=1, \ldots, T$
+    \item Each classifier determines a vote based on : 
+$C(x)=T^{-1} \sum_{t=1}^{T} C_{t}(x)$
+\\where x is the data of each element from the training set. In the last step, the class that receives the largest number of votes is chosen as the classifier for the dataset.
+\end{enumerate}
+
+
+This model was implemented using the python library \textit{imblearn.ensemble.BalancedBaggingClassifier}, with the following hyper-parameters mentioned below:
+
+\begin{enumerate}
+    \item The number of base estimators in the ensemble = 5
+    \item Base Learner = Random Forests
+    \item Bootstrap = True
+\end{enumerate}
+
+% ---------------------         XGBOOST         ----------------------------
+
+\section{Extreme Gradient Boosting Classifier (XGBoost)}
+% ------------Why?
+XGBoost was chosen as a suitable model as it provides a strong regularisation framework that constrains overfitting \cite{sewell2008ensemble}. The algorithm was developed to efficiently reduce computing time and allocate an optimal usage of memory resources. As mentioned in \cite{chen2016xgboost}, important features of implementation include:
+\begin{enumerate}
+    \item Handling of missing values (Sparse Aware).
+    \item Block Structure to support parallelisation in tree construction.
+    \item The ability to fit and boost new data added to a trained model (Continued Training).
+    
+\end{enumerate}
+
+As an ensemble tree-boosting method, XGBoost predicts a new classification membership after each iteration. This is done in an additive way, i.e., that predictions are made from weak classifiers, that constantly improve over the previous classifier's error. Incorrectly classified samples receive higher weights at the next step, forcing the classifier to focus on their performance in the following iterations. The final classification is vigorous as it includes the combined improvement of all the previous modelled trees. The learning of these classifiers is based on defining an objective function \cite{chen2015xgboost}. This function represents training loss and regularisation. The former describes the predictive accuracy of the model, while the latter describes the complexity. The working of XGBoost is now discussed in detail.
+
+Let us denote by $\mathbf{x} \in \mathscr{X}$ a vector of features describing an enterprise, where $X \subseteq \mathbb{R}^{D}$ and by $y \in\{0,1\}$ a label representing whether the enterprise is bankrupt, $y=1$, or not, $y=0$. Further, we utilise Decision Trees as discriminative models, specifically, we use CART. A CART tree can be represented by the weights associated with the leaves in the tree structure
+
+\begin{equation}
+f_{k}\left(\mathbf{x}_{n}\right)=w_{q(\mathbf{x})}
+\end{equation}
+
+where $q\left(\mathbf{x}_{n}\right)$ is the function that takes an example $\mathbf{x}$ and returns the path id in the structure of the tree, $q: \mathbb{R}^{D} \rightarrow\{1, \cdots, T\},$ T is the number of paths (leaves). A path is ended with a leaf that contains weight $w_{i}$
+
+Our algorithm aims at learning an ensemble of $K$ decision trees \cite{chen2015xgboost} as shown below.
+
+\begin{equation}
+h_{K}(\mathbf{x})=\sum_{k=1}^{K} f_{k}(\mathbf{x})
+\end{equation}
+
+where $f_{k} \in \mathscr{F},$ for $k=1, \dots, K,$ and $F$ is a space of all possible decision trees (CART). To obtain a decision for new x, the conditional probability of a class for $h_K$ is calculated as follows:
+
+\begin{equation}
+p(y=1 | \mathbf{x})=\sigma\left(h_{K}(\mathbf{x})\right)
+\end{equation}
+
+where sigma is the sigmoid function (seen in \autoref{eqn:sigomid}).
+For given training data $\mathscr{D}=\left\{\mathbf{x}_{n}, y_{n}\right\}_{n=1}^{N},$ the model is trained by minimising the following criterion:
+
+\begin{equation}
+\label{eqn:xgbProb}
+\begin{aligned}
+L_{\Omega}(\boldsymbol{\theta}) &=L(\boldsymbol{\theta})+\Omega(\boldsymbol{\theta}) \\
+&=\sum_{n=1}^{N} l\left(y_{n}, h_{K}\left(\mathbf{x}_{n}\right)\right)+\sum_{k=1}^{K} \Omega\left(f_{k}\right)
+\end{aligned}
+\end{equation}
+
+The ensemble model for this loss function is known as the Logit-Boost model \cite{chen2015xgboost}.
+
+The problem of learning such model can be solved iteratively by adding a new weak learner $f_{k}(.)$ in the $k^{th}$  training iteration assuming that models $f_{1}(\cdot), \cdots, f_{k-1}(\cdot)$ are already trained. We can present the loss function for single example $l\left(y_{n}, h_{k}\left(\mathbf{x}_{n}\right)\right)$ in the following manner:
+
+\begin{equation}
+l\left(y_{n}, h_{k}\left(\mathbf{x}_{n}\right)\right)=l\left(y_{n}, h_{k-1}\left(\mathbf{x}_{n}\right)+f_{k}\left(\mathbf{x}_{n}\right)\right)
+\end{equation}
+
+We assumed an additive regularisation term, therefore we can represent it in the following form:
+
+\begin{equation}
+L_{\Omega}(\boldsymbol{\theta})=\sum_{n=1}^{N} l\left(y_{n}, h_{k-1}\left(\mathbf{x}_{n}\right)+f_{k}\left(\mathbf{x}_{n}\right)\right)+\Omega\left(f_{k}\right)+\text { constant }
+\end{equation}
+
+Therefore, we can represent the general learning criterion (\autoref{eqn:xgbProb}) as:
+
+\begin{equation}
+\label{eqn:xgb14}
+L_{\Omega}(\boldsymbol{\theta})=\sum_{n=1}^{N} l\left(y_{n}, h_{k-1}\left(\mathbf{x}_{n}\right)+f_{k}\left(\mathbf{x}_{n}\right)\right)+\Omega\left(f_{k}\right)+\text { constant }
+\end{equation}
+
+Further, approximating the objective function using the Taylor expansion with respect to $h_{k-1}\left(\mathbf{x}_{n}\right)$ yields the following:
+
+\begin{equation}
+\begin{aligned}
+L_{\Omega}(\boldsymbol{\theta}) & \simeq \sum_{n=1}^{N}\left[l\left(y_{n}, h_{k-1}\left(\mathbf{x}_{n}\right)\right)+g_{n} \cdot f_{k}\left(\mathbf{x}_{n}\right)+\frac{1}{2} \cdot h_{n} \cdot f_{k}^{2}\left(\mathbf{x}_{n}\right)\right] \\
+&+\Omega\left(f_{k}\right)+\text { constant }
+\end{aligned}
+\end{equation}
+
+where $g_{n}$ is the first derivative with respect to $h_{k-1}\left(\mathbf{x}_{n}\right)$
+
+\begin{equation}
+g_{n}=\frac{\partial l\left(y_{n}, h_{k-1}\left(\mathbf{x}_{n}\right)\right)}{\partial h_{k-1}\left(\mathbf{x}_{n}\right)}
+\end{equation}
+
+and $h_{n}$ is the second derivative with respect to $h_{k-1}\left(\mathbf{x}_{n}\right)$
+
+\begin{equation}
+h_{n}=\frac{\partial^{2} l\left(y_{n}, h_{k-1}\left(\mathbf{x}_{n}\right)\right)}{\partial h_{k-1}^{2}\left(\mathbf{x}_{n}\right)}
+\end{equation}
+
+
+Considering the logistic loss (\autoref{eqn:xgbProb}), $g_n$ can be re-written as:
+
+\begin{equation}
+\begin{aligned}
+g_{n} &=-y_{n} \frac{\exp \left\{-h_{k-1}\left(\mathbf{x}_{n}\right)\right\}}{1+\exp \left\{-h_{k-1}\left(\mathbf{x}_{n}\right)\right\}}+\left(1-y_{n}\right) \frac{\exp \left\{h_{k-1}\left(\mathbf{x}_{n}\right)\right\}}{1+\exp \left\{h_{k-1}\left(\mathbf{x}_{n}\right)\right\}} \\
+&=-y_{n} \frac{1}{1+\exp \left\{h_{k-1}\left(\mathbf{x}_{n}\right)\right\}}+\left(1-y_{n}\right) \frac{1}{1+\exp \left\{-h_{k-1}\left(\mathbf{x}_{n}\right)\right\}} \\
+&=-y_{n}\left(1-\sigma\left(h_{k-1}\left(\mathbf{x}_{n}\right)\right)\right)+\left(1-y_{n}\right) \sigma\left(h_{k-1}\left(\mathbf{x}_{n}\right)\right) \\
+&=\sigma\left(h_{k-1}\left(\mathbf{x}_{n}\right)\right)-y_{n}
+\end{aligned}
+\end{equation}
+
+
+In calculating the first derivative we took advantage of the sigmoid function property, namely, $\sigma(-a)=1-\sigma(a) .$ It can be observed, that $\sigma\left(h_{k-1}\left(\mathbf{x}_{n}\right)\right)$ has interpretation of the probability of observing the class indexed by 1 for the example $\mathbf{x}_{n}$
+
+We can make use of $\sigma^{\prime}(a)=\sigma(a)(1-\sigma(a))$ property to calculate the second derivative, $h_{n}$.
+
+\begin{equation}
+h_{n}=\sigma\left(h_{k-1}\left(\mathbf{x}_{n}\right)\right)\left(1-\sigma\left(h_{k-1}\left(\mathbf{x}_{n}\right)\right)\right)
+\end{equation}
+
+There are different possible regularisation terms. However, in our considerations we focus on the regulariser in the following form:
+
+\begin{equation}
+\Omega\left(f_{k}\right)=\gamma T+\frac{1}{2} \lambda \sum_{t=1}^{T} w_{t}^{2}
+\end{equation}
+
+where $\lambda$ and $\gamma$ are the parameters of the regularisation term. For the tree representation with weights the objective function given in (\autoref{eqn:xgb14}) can be presented in the following manner:
+
+\begin{equation}
+\begin{aligned}
+L_{\Omega}(\boldsymbol{\theta}) & \simeq \sum_{n=1}^{N}\left[g_{n} w_{q\left(\mathbf{x}_{n}\right)}+\frac{1}{2} h_{n} \cdot w_{q\left(\mathbf{x}_{n}\right)}^{2}\right]+\gamma T \\
+&+\frac{1}{2} \lambda \sum_{t=1}^{T} w_{t}^{2}+\text { constant } \\
+&=\sum_{t=1}^{T}\left[\left(\sum_{j \in I_{I}} g_{j}\right) w_{t}+\frac{1}{2}\left(\sum_{j \in I_{t}} h_{j}+\lambda\right) w_{t}^{2}\right]+\gamma T+\text { constant } \\
+&=\sum_{t=1}^{T}\left[G_{t} w_{t}+\frac{1}{2}\left(H_{t}+\lambda\right) w_{t}^{2}\right]+\gamma T+\text { constant }
+\end{aligned}
+\end{equation}
+
+where $I_{t}=\left\{n | q\left(\mathbf{x}_{n}\right)=t\right\}$ is the set of indexes of instances associated with the $t$ -th leaf in the tree, $G_{t}=\sum_{j \in I_{t}} g_{j}$ and $H_{t}=\sum_{j \in I_{t}} h_{j} .$ Assuming the known structure of the tree, the optimal value of the weight in the $t-$ th leaf is as follows:
+
+
+\begin{equation}
+w_{t}^{*}=-\frac{G_{t}}{H_{t}+\lambda}
+\end{equation}
+
+The optimal value of the approximated objective function is given by
+
+\begin{equation}
+L_{\Omega}(\boldsymbol{\theta}) \simeq-\frac{1}{2} \sum_{t=1}^{T} \frac{G_{t}^{2}}{H_{t}+\lambda}+\gamma T+\text { constant }
+\end{equation}
+
+
+The key problem in the above consideration is that the structure of the tree is not given in advanced and searching all possible structures is computationally not feasible. To overcome this issue the tree is being constructed starting from the root. Further, the best attribute located in the root is selected and the best split point for the attribute is chosen. The splitting process is performed until the quality of the model is improved. As the splitting criterion we take the Information Gain:
+
+\begin{equation}
+\label{eqn:Gain}
+\mathscr{Gain}=\frac{G_{L}^{2}}{H_{L}+\lambda}+\frac{G_{R}^{2}}{H_{R}+\lambda}-\frac{\left(G_{L}+G_{R}\right)^{2}}{H_{R}+H_{L}+\lambda}-\gamma
+\end{equation}
+
+where $\frac{G_{L}^{2}}{H_{L}+\lambda}$ is the score value calculated for the left child, $\frac{G_{R}^{2}}{H_{R}+\lambda}$ for is the score value for the right ancestor and $\frac{\left(G_{L}+G_{R}\right)^{2}}{H_{R}+H_{L}+\lambda}$ is the score value if splitting is not performed. Parameter $\gamma$ penalizes addition of more leaves to the tree structure.
+The model can be also regularised by setting a minimum number of examples combined with each of the leaves, by setting the maximal depth of the tree, by setting the percentage of features randomised for each iteration of constructing the tree or by adding the new tree with the corrected influence of the trees in the committee
+
+\begin{equation}
+h_{k}\left(\mathbf{x}_{n}\right)=h_{k-1}\left(\mathbf{x}_{n}\right)+\epsilon f_{k}\left(\mathbf{x}_{n}\right)
+\end{equation}
+
+where $\epsilon \in[0,1]$ is called step-size or shrinkage.
+
+
+% % \label{explain:XGB}
+% Chen and Guestrin \cite{chen2016xgboost} describe XGBboost as an ensemble of K Classification and Regression Trees (CART) \(\left\{T_{1}\left(x_{i}, y_{i}\right), \ldots . T_{K}\left(x_{i}, y_{i}\right)\right\}\) where \(x_{i}\) is the given training set of descriptors associated with a molecule to predict the class label, y, Given that CART assigns a real score to each leaves (outcome or target), the prediction scores for individual CART is summed up to get the final score and evaluated through \(K\) additive functions, as shown in  \autoref{xgb1}:
+
+% \begin{equation}
+% \label{xgb1}
+% \hat{y}_{i}=\sum_{k=1}^{K} f_{k}\left(x_{i}\right), f_{k} \in F
+% \end{equation}
+
+% where \(f_{k}\) represents an independent tree structure with leaf scores and \(F\) is the space of all CART. The regularized objective to optimize is given by  \autoref{xgb2}:
+
+% \begin{equation}
+% \label{xgb2}
+% \operatorname{Obj}(\Theta)=\sum_{i}^{n} l\left(y_{i}, \hat{y}_{i}\right)+\sum_{k}^{K} \Omega\left(f_{k}\right)
+% \end{equation}
+
+% The first term is a differentiable loss function, \(l,\) which measures the difference between the predicted \(\hat{y}\) and the target \(y_{i}\). The second is a regularization term \(\Omega\) which penalizes the complexity of the model to avoid overfitting. It is given by \(\Omega(f)= \alpha T+\frac{1}{2} \lambda \sum_{j-1}^{T} w_{j}^{2}\), where \(T\) and \(w\) are the number of leaves and the score on each leaf respectively.  $\alpha$ and $\lambda$ are constants to control the degree of regularization. Apart from the use of regularization, shrinkage and descriptor subsampling are two additional techniques used to prevent overfitting \cite{sewell2008ensemble}.
+
+
+
+% Training XGBoost is summarized as follows:
+
+% \begin{enumerate}
+%     \item For each descriptor:
+%         \begin{enumerate}
+%                 \item Sort the numbers
+%                 \item Scan the best point to split, i.e, the lowest gain
+%         \end{enumerate}
+      
+%     \item Choose the descriptor with the best splitting point that optimizes the training objective
+%     \item Continue splitting (as in (Step 1) and (Step 2)) until the specified maximum tree depth is reached
+%     \item Assign prediction score to the leaves and prune all negative nodes (nodes with negative gains) in a bottom-up order
+%     \item Repeat the above steps in an additive manner until the specified number of rounds (trees K) is reached.
+% \end{enumerate}
+
+
+% Since additive training is used, the prediction $\hat{y}$ at step $t$ expressed as
+
+% \begin{equation}
+% \hat{y}_{i}^{(t)}=\sum_{k=1}^{K} f_{k}\left(x_{i}\right)=\hat{y}_{i}^{(t-1)}+f_{t}\left(x_{i}\right)
+% \end{equation}
+
+% And the objective function can be written as:
+
+% \begin{equation}
+% \operatorname{Obj}(\Theta)^{(t)}=\sum_{i}^{n} l\left(y_{i}, \hat{y}_{i}^{(t-1)}+f_{t}\left(x_{i}\right)\right)+\Omega\left(f_{t}\right)
+% \end{equation}
+\begin{table}[h!]
+\begin{center}
+ \begin{tabular}{ | p{3cm}| p{3cm} | p{3cm} | p{3cm}|}
+ \hline
+  Parameter & Domain & Default Parameter & After Tuning
+
+  \\ [0.5ex] 
+ \hline\hline
+n\_estimators & (100,500)& 100.0 & 100 \\ \hline
+max\_depth & (5,30) & 3.0 & 9.0 \\ \hline
+learning\_rate & (0.005,0.2) & 0.1 & 0.2 \\ \hline
+min\_child\_weight & (1,50) & 1.0 & 14.0 \\\hline
+subsample & (0.8,1.0) & 1.0 & 1.0 \\\hline
+colsample\_bytree &(0.8,1.0 ) &1.0 & 1.0 \\\hline
+ colsample\_bylevel &(0.8,1.0 ) &1.0 & 1.0 \\\hline
+gamma & (0,0.02)&0.0 & 0.0 \\\hline
+
+\end{tabular}
+\end{center}
+
+    \caption{XGBoost Hyper-Parameters}
+\label{table:XBG_setting}
+\end{table}
+
+
+This model was implemented using the python library \textit{xgboost.XGBClassifier}. The domain of hyper-parameters was taken from those suggested in
+\cite{wang2019xgboost}. 
+Starting with the default, we carried out a  grid search of the parameters in that domain to obtain the best hyper-parameters for our task. This can be seen in \autoref{table:XBG_setting}.
+% \begin{enumerate}
+%     \item Learning Rate = 0.01
+%     \item Objective = Binary:logistic
+%     \item Number of gradient boosted trees = 100
+%     \item Maximum tree depth for base learners = 4
+
+% \end{enumerate}
+
+
+
+\section{Model Evaluation}
+\label{sec:modelEval}
+In accordance with 2019's Basel III\footnote{Basel III is an international regulatory accord that introduced a set of reforms designed to improve the regulation, supervision and risk management within the banking sector.} 
+regulations for evaluating bankruptcies and default models, it is crucial to choose a bankruptcy prediction model that scores well on a range of different performance metrics. 
+
+The accuracy measure of a model is not well-suited for imbalanced datasets and they can be largely ignored in a dataset where a large proportion of the observations belong to one class. The issue with the accuracy measure is that it does not look at class breakdown precision, nor does it provide evidence of true positives or true negatives values. 
+% The false positive rate, on its own, serves a somewhat limited role in this study as well. It is primarily used as validation metric to ensure that the trained model, from which the variable importance measure is derived, does not mistakenly predict healthy firms as being bankrupt (false positives) as this would undermine the validity of the variable importance measures and resulting variable ranking.
+
+To conduct a credible performance evaluation that accounts for overfitting and generalisability, we measure the following metrics on each model:
+\begin{enumerate}
+    \item Precision
+    \item Recall
+    \item F1-Score
+    \item Area under the Receiver Operating Characteristics (ROC) curve
+    
+\end{enumerate}
+
+\subsection{Precision}
+Precision is as defined as the proportion of positive identifications that are actually correct (\autoref{eqn:precision}). High Precision indicates an instance when labelled as positive is indeed positive (a small number of false positives).
+In our task, a high precision value indicates an instance that is classified to be bankrupt, is actually bankrupt.
+
+\begin{equation}
+\label{eqn:precision}
+    Precision = \frac{True\mbox{-}Positive }{True\mbox{-}Positive + False\mbox{-}Positive}
+\end{equation}
+
+\subsection{Recall}
+Recall (Sensitivity) is defined as the proportion of actual positives that have been identified correctly (\autoref{eqn:recall}). High Recall indicates that the class is correctly recognised (a small number of false negatives).
+The question recall address is: Of all the companies that have gone bankrupt, how many did the model label? 
+
+% Recall is used when we want to mostly focus on false-negative i.e to decrease false negative value thereby increase recall value.
+
+\begin{equation}
+\label{eqn:recall}
+    Recall = \frac{True\mbox{-}Positive }{True\mbox{-}Positive + False\mbox{-}Negative}
+\end{equation}
+
+\subsection{F1-Score}
+F1-score is a good performance metrics that leverages both precision and recall metrics. F1-score is obtained by taking the harmonic mean in place of arithmetic mean as it punishes the extreme values more.
+Unlike precision which mostly focuses on false-positive and recall which mostly focuses on false-negative, F1-score is a feasible metric that accounts for both false positive and false negative rates. 
+% F1-Score is used when we want to penalise both false-negatives and false-positives by hoping to decrease them in order to increase F1-Score.
+
+\begin{equation}
+\label{eqn:recall}
+    F1\mbox{-}Score = 2 \times \frac{Precision \times Recall}{Precision + Recall}
+\end{equation}
+
+\subsection{Area Under the Curve (AUC)}
+The receiver operating characteristic curve (ROC) is a plot of the true positive rate (TPR) versus the false positive rate (FPR) for the predictions of a binary classifier at multiple thresholds. The integrated area under the curve (AUC ROC) provides a summary measure of the discriminative ability of the model across all evaluated thresholds. AUC is desirable for the following two reasons:
+\begin{enumerate}
+    \item AUC is scale-invariant. It measures how well predictions are ranked, rather than their absolute values.
+    \item AUC is classification-threshold-invariant. It measures the quality of the model's predictions irrespective of what classification threshold is chosen.
+\end{enumerate}
+
+Since performance is evaluated at multiple thresholds, AUC ROC is less sensitive to imbalanced class distributions compared to other commonly reported metrics ( e.g. Accuracy, TPR, True Negative Rate (TNR)) making it suitable for this task \cite{bradley1997use}.
+The AUC of the ROC curve corresponds to the value of the WilcoxonMann-Whitney test, it is used as a measure of `goodness' for predictions \cite{vihinen2012evaluate}. The range of AUC ROC values is between 0.5 and 1.0 with a value of 0.5 representing a classifier that is no better than randomly guessing the class and a value of 1.0 signifying a classifier with perfect discriminative ability.

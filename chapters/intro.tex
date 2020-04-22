@@ -1,0 +1,64 @@
+Predicting corporate bankruptcy is important because business failures have wide ranging repercussions. It affects internal and external stakeholders of the company such as management, employees, shareholders, creditors, suppliers, clients, governments and global economies \cite{shumway2001forecasting}. Corporate bankruptcy can destabilise the economic system by increasing the unemployment rate, depriving investors and creditors of livelihood and contributing to a higher the crime rate  \cite{mbat2013corporate}. On a large scale, it can lead to negative micro and macro‐economic consequences affecting multiple stakeholders and potentially cause social dislocation, economic downturns and recessions \cite{jones2008advances}.
+
+% Although default events behave stochastically, capital market information can be used to develop bankruptcy prediction models. 
+Beaver \cite{beaver1967financial} and Altman \cite{Altman} were pioneers in predicting bankruptcies and their work is still referenced and valid today. As there are no mature theories of corporate bankruptcy, most studies in corporate bankruptcy are largely been based on iterative, trial and error processes that involve selecting features (such as $\frac{Working \mbox{ }Capital}{Total \mbox{ } Capital}$, $\frac{Retained  \mbox{ }Earnings}{Total \mbox{ } Assets}$, etc.) and predictive models \cite{zhou2014bankruptcy}. 
+
+Early statistical methods applied in corporate bankruptcy prediction utilised Linear Discriminant Analysis (LDA) and Logistic Regression Analysis (LRA) \cite{li2009gaussian}. The problem with applying these statistical techniques to bankruptcy prediction is that the assumptions for independent variables are frequently violated in the practice, which makes these techniques theoretically invalid for finite samples \cite{shin2002genetic}. 
+
+To overcome these limitations, intelligent techniques that do not assume certain data distributions and automatically extract knowledge from training samples have been developed actively in the field of machine learning \cite{alaka2018systematic,lessmann2015benchmarking}. Machine learning models like Support Vector Machines (SVMs), Neural Networks (NNs) and ensemble models have been reported to be more accurate than the traditional statistical methods as shown in \cite{barboza2017machine}. 
+
+% However, there still isn't an conclusive technique devised to effectively predict corporate bankruptcies. 
+% The devil is in the details when it comes to prediction accuracy. These include the data structure, the features or financial ratios used, the extent to which it is possible to segregate the classes, the objective of the classification, etc \cite{duenez2013no}. 
+Although numerous previous studies concluded that machine learning techniques are superior to statistical models, it has been argued that no 'single' classifier can produce the best results. Results also tend to vary when models are tested on data from different countries and economies.
+
+Recently, integrating multiple predictors into an aggregated output, i.e., ensemble methods, have been demonstrated to be an efficient strategy in predicting bankruptcies, especially when the component predictors have different structures that lead to unique prediction errors \cite{breiman1996bagging}. Moreover, latest studies have shown that such ensemble techniques are better performers than single intelligent techniques in financial distress prediction \cite{deligianni2012forecasting,sun2012financial}.
+
+
+With the discovery of Extreme Gradient Boosting (XGBoost) in 2016, ensemble learning has made major advances in solving real world data driven problems that have resisted the determined attempts of the artificial intelligence community for many years.
+It has turned out to be very successful at discovering intricate structures in high-dimensional data and is, therefore applicable to many domains of science, business and government. In addition, ensemble learning has been predicted to have many more successes in the near future, largely because they require very little engineering by hand and can be run very efficiently and achieve credible performance \cite{chen2020ensemble}. 
+% Consequently, ensemble learning can take advantage of large datasets with an increased computational ca
+% increase in the amount of available  ability and data. 
+
+Financial ratios are relationships determined from a company's financial information and is used for comparison purposes. Some examples include measures such as return on investment (ROI), return on assets (ROA), and debt-to-equity, etc. These ratios are the result of dividing one account balance or financial measurement with another. 
+% Usually these measurements or account balances are found on one of the company's financial statements—balance sheet, income statement, cashflow statement, etc.
+They describe the financial health of companies and measure different aspects of a company's performance. Since these ratios are often characterised by high variance, they often tend to pose as a problem for machine learning algorithms.
+This problem is also difficult to overcome when data is normalised or standardised. 
+Ensemble methods that use tree-based learners take into account the order of feature values, not the values itself. Therefore, they are resistant to the large variance observed in the economic indicators. 
+
+Ensemble models are among the most effective methods for improving recognition of the minority class, this makes ensembles robust to class imbalance and reduces overfitting. They can also employ preprocessing methods before learning component classifiers or embed a cost-sensitive framework in the ensemble learning process \cite{blaszczynski2017actively}.
+
+
+\section{Motivation and Goals}
+For financial institutions, the ability to accurately predict in advance any possible business failures is crucial, as incorrect decisions can have direct and severe economical consequences. Our objective is to help address this problem by building a highly effective bankruptcy prediction model and test its performance on financial data from listed Japanese companies. We propose the use of ensemble learning to build these bankruptcy prediction models as ensembles have emerged as a powerful tool that leverage a pool of individual (base) learners and produce highly accurate classification models.
+Practical investigations have demonstrated that ensembles with tree-based base learners generally outperform stand-alone prediction methods in most credit risk and bankruptcy prediction problems \cite{west2005neural,doumpos2007model,alfaro2008bankruptcy,sun2012financial}. 
+Research has also shown that using ensemble models to predict bankruptcy has been able to outperform complex models like neural networks \cite{kim2010ensemble}. 
+% is to conduct an in-depth analysis to understand the numerous characteristics and complexities of financial data. 
+% Gaining an understanding of this, we take the approach of designing machine learning models with the help of ensembles to accurately predict corporate bankruptcy.
+% we explore the potential links between the performance of classifier models and provide a detailed evaluation of them.
+% ensembles are emerg- ing as a powerful tool for exploiting the different behaviour of a pool of individual learners and also in reducing prediction errors in several financial applications, we take the approach of leveraging these models to accurately predict corporate bankruptcy
+
+
+% for exploiting the different behaviour of a pool of individual learners 
+
+
+
+% We aim to contribute this field of literature by putting forth a novel contr
+
+% showing that powerful ensemble methods were used to make bankruptcy predictions Japanese companies.
+
+% To the best of our knowledge, our study puts forth a novel contribution on the Japanese dataset, wherein we consider the financial condition of listed Japanese companies from 2000 to 2018. We compare the results obtained on the bankruptcy prediction task using different machine learning and ensemble models.
+
+
+\section{Work Completed and Personal Contributions}
+
+% This paper carries out a meticulous data analysis on the financial health of listed Japanese companies from 2000 to 2018.To the best of our knowledge our paper puts forth a novel approach of predicting bankruptcy by demonstrating it through Japanese financial data. Based on the success seen in \cite{matsunaga2019exploring,li2019dp,molodtsova2009out}, we employ a ten year rolling window for five consecutive years and predict bankruptcy - using imputation techniques, oversampling and ensemble learning - in a one year horizon.
+
+To the best of our knowledge this paper puts forth a novel contribution to the bankruptcy prediction problem by using a ten year rolling window model to predict bankruptcy on a one year horizon. The Asian economy is often ignored in financial research - the paucity of available resources is representative of this. As Japan has the third highest market capitalisation in the world, we chose to carry out our research on the Japanese economy.
+After conducting a meticulous data analysis on the financial health of listed Japanese companies from 2000 to 2018, we compare three imputation techniques along with oversampling the minority class and then use ensemble learning to produce results that are in line with similar research on different economies \cite{barboza2017machine,le2018cluster}.
+
+We aim to address the gap in literature by comparing the performance of different data imputation\footnote{Imputed value is an assumed value given to an item when the actual value is not known or available. Imputed values are a logical or implicit value for an item or time set, wherein a "true" value has yet to be ascertained. It would be a best guess estimate, to accurately estimate a larger set of values or series of data points.} techniques that could be used to estimate missing data. Additionally, efforts have been made to account for the class imbalance by including a stage of over sampling of the minority class.
+Machine Learning models have been implemented and their results have been critiqued and compared to produce the best prediction model for the available dataset. A case has been made for the ability of ensemble models to prevent overfitting by achieving high F1-Scores and AUC values under the ROC curve.
+
+
+Henceforth the paper is organised as follows: In \autoref{chap:LiteratureReview}, we conduct a background review of related financial and machine learning research. In \autoref{chap:JapanDataset}, we describe and the Japanese financial dataset, its relevance in being representative of the modern markets and also summarise some key statistics and features that provide a general overview on the data. We also discuss the data pre-processing steps that have been used.
+In \autoref{chap:Methodologies}, we outline our experiment methodologies and describe the evaluation metrics that have been used. In \autoref{chap:Results}, we present our empirical results. In \autoref{chap:Discussion} we discuss the results obtained in the light of existing literature and put forward our best performing model. We conclude in \autoref{chap:Conclusion} with a summary of the main findings, the implications of this work and suggested areas for further research.

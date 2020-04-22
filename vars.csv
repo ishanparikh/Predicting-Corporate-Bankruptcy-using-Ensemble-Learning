@@ -1,0 +1,33 @@
+ID ,Description,ID ,Description
+X1,net profit / total assets,X33,operating expenses / short-term liabilities
+X2,total liabilities / total assets,X34,operating expenses / total liabilities
+X3,working capital / total assets,X35,profit on sales / total assets
+X4,current assets / short-term liabilities,X36,total sales / total assets
+X5,[(cash + short-term securities + receivables - short-term liabilities) / (operating expenses - depreciation)] * 365,X37,(current assets - inventories) / long-term liabilities
+X6,retained earnings / total assets,X38,constant capital / total assets
+X7,EBIT / total assets,X39,profit on sales / sales
+X8,book value of equity / total liabilities,X40,(current assets - inventory - receivables) / short-term liabilities
+X9,sales / total assets,X41,total liabilities / ((profit on operating activities + depreciation) * (12/365))
+X10,equity / total assets,X42,profit on operating activities / sales
+X11,(gross profit + extraordinary items + financial expenses) / total assets,X43,rotation receivables + inventory turnover in days
+X12,gross profit / short-term liabilities,X44,(receivables * 365) / sales
+X13,(gross profit + depreciation) / sales,X45,net profit / inventory
+X14,(gross profit + interest) / total assets,X46,(current assets - inventory) / short-term liabilities
+X15,(total liabilities * 365) / (gross profit + depreciation),X47,(inventory * 365) / cost of products sold
+X16,(gross profit + depreciation) / total liabilities,X48,EBITDA (profit on operating activities - depreciation) / total assets
+X17,total assets / total liabilities,X49,EBITDA (profit on operating activities - depreciation) / sales
+X18,gross profit / total assets,X50,current assets / total liabilities
+X19,gross profit / sales,X51,short-term liabilities / total assets
+X20,(inventory * 365) / sales,X52,(short-term liabilities * 365) / cost of products sold)
+X21,sales (n) / sales (n-1),X53,equity / fixed assets
+X22,profit on operating activities / total assets,X54,constant capital / fixed assets
+X23,net profit / sales,X55,working capital
+X24,gross profit (in 3 years) / total assets,X56,(sales - cost of products sold) / sales
+X25,(equity - share capital) / total assets,X57,(current assets - inventory - short-term liabilities) / (sales - gross profit - depreciation)
+X26,(net profit + depreciation) / total liabilities,X58,total costs /total sales
+X27,profit on operating activities / financial expenses,X59,long-term liabilities / equity
+X28,working capital / fixed assets,X60,sales / inventory
+X29,logarithm of total assets,X61,sales / receivables
+X30,(total liabilities - cash) / sales,X62,(short-term liabilities *365) / sales
+X31,(gross profit + interest) / sales,X63,sales / short-term liabilities
+X32,(current liabilities * 365) / cost of products sold,X64,sales / fixed assets

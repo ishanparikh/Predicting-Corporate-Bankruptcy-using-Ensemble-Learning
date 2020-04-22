@@ -1,0 +1,19 @@
+% \label{explainRF}
+
+% Random forests are  structured through an ensemble of \textbf{d} decision trees with the following algorithm:
+
+% \begin{enumerate}
+%   \item Draw a subset of training data with random sampling by replacement (bootstrap).
+%   \item Train a decision tree with the subset of training data. At each node of the tree, choose the best split of a variable from only the randomly selected m variables rather than from all the variables.
+%   \item Repeat steps 1 and 2 to produce d decision trees.
+%   \item Make predictions for new data by voting for the most popular class from among all of the output of the d decision trees.
+% \end{enumerate}
+
+% The Gini index (\autoref{GI}) is a popular algorithm for constructing decision trees \cite{breiman2017classification}. The Gini index is a measurement of the best split criterion based on the impurity of each node; impurity is a measure of how often a randomly chosen element from the set would be incorrectly labeled if it was randomly labeled according to the distribution of labels in the subset. The algorithm selects the optimal splitting variable and corresponding threshold value by making each node as pure as possible. Suppose $ M_n $ is the number of pieces of information reaching node n, and $ M_n^i$ is the number of data points belonging to class $ C_i$. The Gini index, $ GI_n $, of node $ n$ is thus
+
+% \begin{equation}
+% \label{GI}
+%     GI_n = 1 - \sum_{i=1}^{K} (p_n^i)^2,  \hbox{where }  p_n^i = M_n^i / M_n
+% \end{equation}
+
+% A smaller Gini index value of node n represents purity, which implies that the node contains more observations from a single class. Hence, a decreasing Gini index is an important criterion for node splitting.

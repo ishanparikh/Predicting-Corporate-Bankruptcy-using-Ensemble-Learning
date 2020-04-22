@@ -1,0 +1,252 @@
+\label{chap:Results}
+
+We repeated 10-fold cross-validations for five times with different random seeds as is conducted by \cite{kim2010ensemble} in order to ensure that the comparison among three different classifiers does not happen by chance. For each of 10-fold cross-validation, the entire data set is first partitioned into 10 equal-sized sets, and then each set is in turn used as the test set while the classifier trains on the other nine sets. The cross-validated folds were tested independently of each algorithm. This way we obtained the results for four classifiers (and the baseline) on each of the fifty experiments. The empirical results reported in this section are the averages of the evaluation metrics used.
+% The empirical results consists of the performance of the four classifiers using three different imputation techniques. We evaluate these classifiers on four performance metrics discussed in \autoref{sec:modelEval}.
+
+\section{Baseline Results}
+We began our initial experiments by setting a valid baseline. We followed Altman's \cite{Altman} footsteps and used Logistic Regression (LR) as our baseline classifier. \autoref{table:Baseresults} shows the results obtained. Examining these results, we make the following observations;
+first when data is not imputed LR performs worse than a random classifier. This is because LR is not good at handling missing data and performs poorly when it is not accounted for.
+Second, incorporating imputation techniques but leaving out the oversampling step brings about a significant increase (over 10\%) in the AUC score. These models suffer from a low precision score suggesting that there are many false positives in the model.
+Third, the ideal baseline results are produced when both imputation and oversampling are used, particularly when kNN imputation is used. \textbf{This is our best performing baseline with an AUC score of 0.628 and an F1-score of 0.564.}
+
+
+\begin{table}[htp]
+\small
+\begin{center}
+ \begin{tabular}{ | p{2cm} | p{1.5cm} | p{2cm} | p{1.5cm}| p{1.5cm} | p{1.5cm}| p{1.5cm} | }
+ \hline
+  Model & Imputation & Oversampled & Precision  & Recall & F1-Score & AUC
+
+  \\ [0.5ex] 
+ \hline\hline
+
+    Logistic Regression & None & No& 0.044 & 0.030 & 0.036 & 0.448 \\ \hline
+    Logistic Regression & None & Yes& 0.053 & 0.035 & 0.042 & 0.473 \\ \hline
+    \midrule
+    Logistic Regression & EM & No & 0.064 & 0.360 & 0.108 & 0.583 \\ \hline
+    Logistic Regression & KNN & No & 0.068 & 0.370 & 0.115 & 0.592\\ \hline
+    Logistic Regression & MICE & No & 0.068 & 0.370 & 0.115 & 0.592  \\ \hline
+    \midrule
+    Logistic Regression & EM & Yes & 0.515 & 0.490 & 0.503 & 0.580 \\ \hline
+    \textbf{Logistic Regression} & \textbf{KNN} & \textbf{Yes} & \textbf{0.570} & \textbf{0.559} & \textbf{0.564} & \textbf{0.628}\\ \hline
+    Logistic Regression & MICE & Yes & 0.504 & 0.647 & 0.567 & 0.595  \\ \hline
+
+\end{tabular}
+\end{center}
+
+    \caption{Baseline Results}
+\label{table:Baseresults}
+\end{table}
+
+%-----------------------------------------------------------------------------------------------------
+
+\section{Results from Machine Learning Models}
+
+
+% ------noSMOTEnoImputation ------
+\autoref{table:noSMOTEnoImputation} shows the results we obtained, solely by applying our classifiers on the raw data, i.e., without imputing the data nor oversampling the minority class. As expected, the performance of our classifiers is very poor, this is evident from the low F1 and AUC scores. As the AUC scores are just over 0.5, these models are only marginally better than a random classification.
+
+\begin{table}[h!]
+\begin{center}
+ \begin{tabular}{ | p{3cm} | p{2cm} | p{1.75cm}| p{1.75cm} | p{1.75cm}| p{1.75cm} | }
+ \hline
+  Model & Imputation &  Precision  & Recall & F1-Score & AUC
+
+  \\ [0.5ex] 
+ \hline\hline
+    
+    Decision Tree & None & 0.070 & 0.120 & 0.088 & 0.507 \\ \hline
+    Random Forest & None & 0.102 & 0.251 & 0.145 & 0.512 \\ \hline
+    Bagging & None & 0.017 & 0.556 & 0.033 & 0.563 \\ \hline
+    XGBoost & None & 0.050 & 0.032 & 0.039 & 0.527 \\ \hline
+    
+\end{tabular}
+\end{center}
+
+    \caption{Experiment results without data imputation nor minority class oversampling.}
+\label{table:noSMOTEnoImputation}
+\end{table}
+
+
+% --------------table:yesImputenoSMOTE
+
+Following this, we incorporate the imputation techniques to estimate the missing values present in our data.
+\autoref{table:yesImputenoSMOTE} shows the results obtained by the classification models. 
+We see that all the classifiers seem to be involved in a 'tug-of-war' match between precision and recall values.
+
+A high recall, the low precision value indicates that most of the positive examples are correctly recognised (low false negatives) but there are a lot of false positives. This is seen in the Bagging ensemble model that achieves an AUC score of 0.746 with MICE imputation.
+Whereas a low recall value, high precision indicates that the model misses a lot of positive examples (high false negatives) but those we predicted as positive are indeed positive (low false positives). This can be observed in the Random Forests with MICE imputation model that achieves an AUC score of 0.739.
+
+
+\begin{table}
+\begin{center}
+ \begin{tabular}{ | p{3cm} | p{2cm} | p{1.75cm}| p{1.75cm} | p{1.75cm}| p{1.75cm} | }
+ \hline
+  Model & Imputation &  Precision  & Recall & F1-Score & AUC
+
+  \\ [0.5ex] 
+ \hline\hline
+
+    Decision Tree & EM & 0.361 & 0.520 & 0.426 & 0.701 \\ \hline
+    Decision Tree & KNN & 0.414 & 0.550 & 0.472 & 0.721 \\ \hline
+    Decision Tree & MICE & 0.384 & 0.530 & 0.445 & 0.709 \\ \hline
+    Random Forest & EM & 0.800 & 0.080 & 0.145 & 0.540 \\ \hline
+    Random Forest & KNN & 0.650 & 0.130 & 0.217 & 0.563 \\ \hline
+    Random Forest & MICE & 0.894 & 0.420 & 0.572 & 0.739 \\ \hline
+    Bagging & EM & 0.121 & 0.670 & 0.205 & 0.705 \\ \hline
+    Bagging & KNN & 0.149 & 0.660 & 0.243 & 0.721 \\ \hline
+    Bagging & MICE & 0.171 & 0.770 & 0.280 & 0.746 \\ \hline
+    XGBoost & EM & 0.881 & 0.370 & 0.521 & 0.684 \\ \hline
+    XGBoost & KNN & 0.933 & 0.420 & 0.579 & 0.709 \\ \hline
+    XGBoost & MICE & 0.945 & 0.520 & 0.671 & 0.759 \\ \hline
+\end{tabular}
+\end{center}
+
+    \caption{Experiment results when data is imputed but not oversampled.}
+\label{table:yesImputenoSMOTE}
+\end{table}
+
+% ----------------
+
+
+% table:noImputeyesSmote-------------
+
+Next, we used SMOTE to oversample the minority class and to examine the effect that this process would have without performing data imputations. From \autoref{table:noImputeyesSmote} we note that the results are an improvement when compared to the experiment setup in  \autoref{table:noSMOTEnoImputation}; but the overall performance of these classifiers is still poor. The low precision and recall values indicate that the model still suffers from high false-positive and high false-negative rates.
+
+\begin{table}[htpb]
+\begin{center}
+ \begin{tabular}{ | p{3cm} | p{2cm} | p{1.75cm}| p{1.75cm} | p{1.75cm}| p{1.75cm} | }
+ \hline
+  Model & Imputation &  Precision  & Recall & F1-Score & AUC
+
+  \\ [0.5ex] 
+ \hline\hline
+    
+    Decision Tree & None & 0.084 & 0.138 & 0.104 & 0.684 \\ \hline
+    Random Forest & None & 0.122 & 0.289 & 0.172 & 0.691 \\ \hline
+    Bagging & None & 0.020 & 0.639 & 0.040 & 0.760 \\ \hline
+    XGBoost & None & 0.060 & 0.037 & 0.046 & 0.711 \\ \hline
+    
+\end{tabular}
+\end{center}
+
+    \caption{Experiment results from oversampling the minority class to 15\% of the data.}
+\label{table:noImputeyesSmote}
+\end{table}
+% -----------------
+
+\section{The Best Model}
+
+Finally, we combined the use of imputation techniques and oversampling of the minority class.  \autoref{table:results} showcases a significant improvement across all the performance metrics.
+The combination of MICE imputation and oversampling achieves the highest performance amongst all the classifiers used.
+We conclude our experiments by reporting that XGBoost, when combined with MICE imputation, produces the best performing model to predict bankruptcies. \textbf{The model has the highest discriminative ability with an AUC score of 0.856. It achieves high precision and recall value of 0.774 and 0.804 respectively, resulting in a strong F1-Score of 0.798.}
+
+\begin{table}[h!]
+\begin{center}
+ \begin{tabular}{ | p{3cm} | p{2cm} | p{1.75cm}| p{1.75cm} | p{1.75cm}| p{1.75cm} | }
+ \hline
+  Model & Imputation &  Precision  & Recall & F1-Score & AUC
+
+  \\ [0.5ex] 
+ \hline\hline
+    
+    Decision Tree & EM & 0.650 & 0.784 & 0.710 & 0.740 \\ \hline
+    Decision Tree & KNN & 0.680 & 0.813 & 0.740 & 0.770 \\ \hline
+    Decision Tree & MICE & 0.767 & 0.775 & 0.771 & 0.803 \\ \hline
+    Random Forest & EM & 0.651 & 0.676 & 0.663 & 0.707 \\ \hline
+    Random Forest & KNN & 0.640 & 0.627 & 0.634 & 0.687 \\ \hline
+    Random Forest & MICE & 0.734 & 0.734 & 0.734 & 0.773 \\ \hline
+    Bagging & EM & 0.667 & 0.784 & 0.720 & 0.751 \\ \hline
+    Bagging & KNN & 0.694 & 0.824 & 0.753 & 0.781 \\ \hline
+    Bagging & MICE & 0.776 & 0.813 & 0.794 & 0.821 \\ \hline
+    XGBoost & EM & 0.701 & 0.784 & 0.740 & 0.812 \\ \hline
+    XGBoost & KNN & 0.702 & 0.765 & 0.731 & 0.806 \\ \hline
+    \textbf{XGBoost} & \textbf{MICE} & \textbf{0.774} & \textbf{0.804} & \textbf{0.798} & \textbf{0.856} \\ \hline
+
+\end{tabular}
+\end{center}
+
+    \caption{Experiment results after over-sampling minority class to 15\% with SMOTE.}
+\label{table:results}
+\end{table}
+
+
+\section{Evaluating Feature Impact}
+Accepting the success of XGBoost, we proceed to further explore the most commonly used financial ratios in the forests of XGBoost.
+
+We evaluate the popularity of a feature in the XGBoost forest by describing the total number of occurrences in trees that constitutes the forest. Let us denote the total number of occurrences of the $d^{th}$ feature in the forest structure by $m_{d}$. We define the categorical distribution $\boldsymbol{\theta}_{F}=\left[\theta_{F}^{(1)}, \cdots, \theta_{F}^{(d)}, \cdots \theta_{F}^{(D)}\right]$ for selecting the features to be replicated in the following manner:
+% We evaluated the importance of the features by calculating the total number of the features being observed in the nodes of the forest structure by total number of nodes in trees that constitute the forest. In the other words, we take under consideration the categorical distribution $\theta_{F}^{(d)}$ defined in \autoref{eqn:featureImp}. 
+
+\begin{equation}
+\label{eqn:featureImp}
+\theta_{F}^{(d)}=\frac{m_{d}}{\sum_{d=1}^{D} m_{d}}
+\end{equation}
+
+
+\autoref{table:featureRank} presents the twenty most important features that are considered in each of the classification cases. Analysing these results, we can ratiocinate that there are three key features in predicting bankruptcy, as they appeared in every research year. These features are:  
+\begin{enumerate}
+    \item \textbf{X25} - the adjusted share of equity in the financing of assets.
+    \item \textbf{X40} - current ratio, the most frequently used ratio in the integrated models. \cite{zikeba2016ensemble}
+    \item \textbf{X52} - liabilities turnover ratio.
+\end{enumerate}
+
+
+% Additionally, it is worth noting that besides these three features, the following features may also be useful:
+Additionally, it is worth noting that the following features appeared in four out of five research years.
+
+\begin{enumerate}
+    \item Profitability Ratios: X13, X22, X31, X42.
+    \item Leverage Ratios: X15.
+    \item Operating Performance Ratios: X9, X36, X48, X52.
+    \item Other Ratios: X5, X27, X58.
+\end{enumerate}
+Further detail on this can be found in \autoref{table:FRstatsDefault}.
+
+\begin{table}[h]
+% \small
+\begin{center}
+\begin{tabular}{|l||l l|l l|l l|l l|l l|}
+ \hline
+     & \multicolumn{2}{c}{Year 1} &
+    \multicolumn{2}{c}{Year 2} &
+    \multicolumn{2}{c}{Year 3} &
+    \multicolumn{2}{c}{Year 4} &
+    \multicolumn{2}{c}{Year 5} \\
+
+    Rank 
+    & ID & $\theta_{F}^{(d)}$
+    & ID & $\theta_{F}^{(d)}$
+    & ID & $\theta_{F}^{(d)}$
+    & ID & $\theta_{F}^{(d)}$
+    & ID & $\theta_{F}^{(d)}$ 
+      \\ [0.5ex] 
+ \hline\hline
+    1.0 & X16 & 0.051 & X40 & 0.047 & X15 & 0.050 & X22 & 0.041 & X25 & 0.062 \\ \hline
+    2.0 & X52 & 0.038 & X15 & 0.044 & X22 & 0.038 & X52 & 0.044 & X22 & 0.048 \\ \hline
+    3.0 & X32 & 0.037 & X27 & 0.040 & X52 & 0.036 & X15 & 0.041 & X27 & 0.037 \\ \hline
+    4.0 & X28 & 0.035 & X5 & 0.034 & X27 & 0.033 & X25 & 0.038 & X15 & 0.035 \\ \hline
+    5.0 & X5 & 0.034 & X25 & 0.034 & X40 & 0.032 & X27 & 0.034 & X52 & 0.032 \\ \hline
+    6.0 & X40 & 0.033 & X36 & 0.033 & X5 & 0.030 & X40 & 0.032 & X53 & 0.028 \\ \hline
+    7.0 & X9 & 0.031 & X22 & 0.027 & X25 & 0.026 & X58 & 0.025 & X14 & 0.024 \\ \hline
+    8.0 & X11 & 0.030 & X42 & 0.027 & X31 & 0.025 & X42 & 0.025 & X40 & 0.024 \\ \hline
+    9.0 & X59 & 0.030 & X31 & 0.026 & X12 & 0.025 & X13 & 0.025 & X42 & 0.023 \\ \hline
+    10.0 & X23 & 0.026 & X13 & 0.026 & X42 & 0.023 & X36 & 0.023 & X36 & 0.023 \\ \hline
+    11.0 & X25 & 0.024 & X12 & 0.022 & X13 & 0.023 & X31 & 0.023 & X54 & 0.023 \\ \hline
+    12.0 & X55 & 0.024 & X35 & 0.021 & X53 & 0.023 & X5 & 0.023 & X12 & 0.026 \\ \hline
+    13.0 & X17 & 0.023 & X9 & 0.021 & X57 & 0.022 & X53 & 0.022 & X58 & 0.021 \\ \hline
+    14.0 & X14 & 0.022 & X58 & 0.021 & X37 & 0.021 & X6 & 0.021 & X41 & 0.021 \\ \hline
+    15.0 & X29 & 0.021 & X11 & 0.020 & X48 & 0.020 & X35 & 0.020 & X44 & 0.019 \\ \hline
+    16.0 & X13 & 0.021 & X48 & 0.020 & X6 & 0.020 & X48 & 0.020 & X48 & 0.019 \\ \hline
+    17.0 & X58 & 0.021 & X52 & 0.020 & X35 & 0.018 & X9 & 0.020 & X9 & 0.019 \\ \hline
+    18.0 & X30 & 0.019 & X57 & 0.020 & X41 & 0.018 & X24 & 0.019 & X31 & 0.019 \\ \hline
+    19.0 & X57 & 0.019 & X55 & 0.018 & X32 & 0.018 & X38 & 0.019 & X32 & 0.019 \\ \hline
+    20.0 & X56 & 0.017 & X6 & 0.0179 & X36 & 0.018 & X29 & 0.018 & X16 & 0.018 \\ \hline
+
+    \end{tabular}
+    \end{center}
+    \caption{Ranking the top 20 features for each research year.}
+\label{table:featureRank}
+\end{table}
+
+
+% As a consequence, the most popular features are going to be selected for reproduction (by the base learners in the ensemble models). The proposed procedure can be seen as a kind of an evolutionary approach that selects the strongest parents for the child feature.
